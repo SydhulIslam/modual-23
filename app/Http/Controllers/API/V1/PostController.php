@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\V1;
 
-use App\Models\Post;
-
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Post;
 use App\Http\Resources\PostResource;
 use App\Http\Requests\PostRwquest;
 
@@ -16,16 +15,12 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
         return response()->json([
-            'data' => PostResource::collection($posts),
+            'data' => PostResource::collection(Post::all()),
             'message' => 'Posts retrieved successfully',
             'status' => 200,
         ], 200);
-
-
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -33,12 +28,10 @@ class PostController extends Controller
     public function store(PostRwquest $request)
     {
 
-
         $data = $request->validated();
 
         $post = Post::create($data);
 
-        // return $post;
         return response()->json([
             'data' => new PostResource($post),
             'message' => 'Post created successfully',
@@ -67,21 +60,17 @@ class PostController extends Controller
         ], 200);
     }
 
-
-
-
-
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(PostRwquest $request, string $id)
+    public function update(Request $request, string $id)
     {
         $post = Post::findOrFail($id);
 
         if(!$post) {
             return response()->json([
                 'message' => 'Post not found',
+                'status'=> 404,
             ], 404);
         }
 
@@ -95,8 +84,6 @@ class PostController extends Controller
             'status' => 200,
         ], 200);
     }
-
-
 
     /**
      * Remove the specified resource from storage.
@@ -118,7 +105,5 @@ class PostController extends Controller
             'message' => 'Post deleted',
             'status' => 200,
         ], 200);
-
-
     }
 }
